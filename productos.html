@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAYORISTA - SIN LIMITES</title>
+    <link rel="stylesheet" href="productos.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+</head>
+<body>
+    <header>
+        <img src="logo.png" alt="Logo de la empresa" class="logo-gorra">
+        <div class="logo"> <h1> MAYORISTA</h1>
+            <span class="logo-text">SIN LIMITES</span>
+        </div>
+        
+        
+        <nav class="nav-linkss" id="nav-links">
+            
+        <img src="logo.png" alt="Logo de la empresa" class="logo-gorra">
+        <div class="logo"> <h1> MAYORISTA</h1>
+            <span class="logo-text">SIN LIMITES</span>
+        </div>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+<li><a href="#envio">Envios</a></li>
+  
+<li><a href="https://wa.me/543329513047?text=He%20visto%20tus%20productos%20en%20la%20p%C3%A1gina%20y%20estoy%20interesado/a" target="_blank">Contacto</a></li>
+              
+<div id="verificarEmpleado" style="margin: 15px 0;">
+  <input type="password" id="codigoEmpleado" placeholder="Código de empleado" />
+  <button onclick="verificarCodigo()">Verificar</button>
+</div>
+
+
+
+<!-- Aquí aparecerá el botón "Cerrar empleados" -->
+<div id="botonCerrarEmpleadoContainer" style="margin-top: 15px;"></div>
+        
+            </ul>
+        </nav>
+        <div class="menu-toggle" id="menu-toggle">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+    </header>
+
+ 
+
+
+
+
+  <div id="productos-container"></div>
+
+
+
+
+<!-- Formulario de compra -->
+<div id="formulario-compra" class="formulario-compra">
+    <button id="cerrar-formulario" class="cerrar-formulario">X</button>
+    <h5>DATOS PARA EL ENVÍO</h5>
+    <form id="compra-form">
+        <label for="nombre-apellido" class="form-label">Nombre y Apellido:</label>
+        <input type="text" id="nombre-apellido" name="nombre-apellido" class="form-input" required>
+
+        <label for="dni" class="form-label">DNI:</label>
+        <input type="text" id="dni" name="dni" class="form-input" required>
+
+        <label for="celular" class="form-label">Celular:</label>
+        <input type="text" id="celular" name="celular" class="form-input" required>
+
+        <label for="provincia" class="form-label">Provincia:</label>
+        <input type="text" id="provincia" name="provincia" class="form-input" required>
+
+        <label for="localidad" class="form-label">Localidad:</label>
+        <input type="text" id="localidad" name="localidad" class="form-input" required>
+
+        <label for="cp" class="form-label">Código Postal:</label>
+        <input type="text" id="cp" name="cp" class="form-input" required>
+
+        <label for="mail" class="form-label">Correo Electrónico:</label>
+        <input type="email" id="mail" name="mail" class="form-input" required>
+
+        <label for="metodo-envio" class="form-label">Método de Envío:</label>
+<select id="metodo-envio" name="metodo-envio" class="form-input" required>
+  <option value="" disabled selected>Seleccionar opción</option>
+  <option value="Via Cargo">Via Cargo</option>
+  <option value="Correo Argentino">Correo Argentino</option>
+</select>
+
+
+        <button type="submit" class="btn-submit">Enviar</button>
+    </form>
+</div>
+
+      
+<div id="alerta-personalizada" class="alerta">
+  <p>La compra debe ser mayor de 15 productos.</p>
+</div>
+      
+      
+<section class="buscador">
+    <input type="text" id="searchInput" placeholder="Buscar gorras...">
+    <button id="searchBtn">🔍</button>
+</section>
+    
+ 
+
+
+   <div class="carrito-icono" id="carrito-icono">
+        <img src="img/icon.gif" alt="Carrito">
+        <div class="contador" id="contador">0</div></div>
+    
+
+<!-- Contenedor del carrito flotante (oculto inicialmente) -->
+<div  class="contenido-carrito" id="carrito">
+         <header style="background-color: rgba(250, 250, 250, 12);">
+  <img src="logo.png" alt="Logo de la empresa" class="logo-gorra">
+        <div class="logo"> <h1 style="color: black;">MAYORISTA</h1>
+            <span class="logo-text">SIN LIMITES</span>
+        </div> </header>
+    <h3 style="font-size: 1.8rem;">Carrito de Compras</h3>
+    <ul id="carrito-items">
+        <!-- Aquí se agregarán los productos del carrito -->
+    </ul>
+    <p id="total-carrito">Total: $0</p>
+    
+    <!-- Botón para finalizar compra -->
+<button id="finalizar-compra" type="button" class="btn-finalizar-compra">Finalizar Compra</button>
+
+
+ <button type="button" class="vaciar-finalizar" id="vaciar-carrito">Vaciar Carrito</button>
+</div>
+
+  </div>
+
+
+
+
+    <section class="productos" id="produc">
+    <h2>Nuestros Productos</h2>
+        
+    
+    <div id="productos" class="productos"></div>
+</section>
+    
+           
+        
+    
+    
+    <section class="formas-pago">
+    <h2>Formas de Pago</h2>
+        
+    <div class="metodo">
+        <i class="fas fa-exchange-alt metodo-logo"></i>  <!-- Icono de Transferencia -->
+        <p>Recibimos tu pago mediante transferencia.</p>
+    </div>
+</section>
+    
+
+<!-- En tu <head> -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+   <button class="scroll-to-top" title="Volver arriba">
+  <i class="fas fa-arrow-up"></i>
+</button>
+    
+    
+    <!-- Icono de WhatsApp flotante -->
+<a href="https://wa.me/+5493329317141" target="_blank" class="whatsapp-icon">
+  <i class="fab fa-whatsapp"></i>
+</a>
+    
+    <div class="envios-container">
+    <h2>Envíos a todo el país</h2>
+    <div class="truck-container">
+        <i class="fas fa-truck"></i>
+    </div>
+</div>
+    
+<section id="envio">
+    <h2>Envío</h2>
+    <p>Trabajamos con <strong>Correo Argentino</strong> para los envíos. El cliente puede elegir entre las siguientes opciones:</p>
+    <ul>
+        <li><strong>A domicilio:</strong> El envío se realiza a tu dirección. (Ver condiciones y costos adicionales).</li>
+        <li><strong>Retiro en sucursal:</strong> Puedes retirar tu pedido en la sucursal más cercana de <strong>Correo Argentino</strong>.</li>
+    </ul>
+    <p>Es importante que nos indiques cuál opción prefieres al realizar la compra.</p>
+</section>
+
+<section id="cargo-envio">
+    <h2>Via Cargo</h2>
+    <p>El costo de envío se abona al momento de retirar el paquete en la sucursal de <strong>Via Cargo</strong>.</p>
+    <p>En caso de optar por la entrega a domicilio, el costo de envío será calculado y te informaremos el monto correspondiente.</p>
+</section>
+    
+    
+    <div id="loader" style="display: none; text-align: center; margin-top: 20px;">
+  <p>Generando PDF, por favor espera y gracias por su compra...</p>
+</div>
+    
+
+<footer id="footer">
+    <div class="footer-content">
+        <!-- Redes Sociales -->
+        <div class="footer-social">
+            <h3>Redes Sociales</h3>
+            <div class="social-icons">
+                <a href="https://www.facebook.com/share/1ExXiWNjMM/" class="social-icon facebook" target="_blank" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.tiktok.com/@sinlimitemayorista?_t=ZM-8uhxanvieJx&_r=1" class="social-icon twitter" target="_blank" title="Twitter"><i class="fab fa-tiktok"></i></a>
+                <a href="https://www.instagram.com/mtcaps.mayorista.sp?igsh=MTd6MWdjZjMzMWhwcg==" class="social-icon instagram" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+                </div>
+        </div>
+
+        <!-- Días y Horarios -->
+        <div class="footer-hours">
+            <h3>Días y Horarios</h3>
+            <p>Lunes a Viernes: 8 a 22 hs</p>
+            <p>Sábado : de 13 a 20 hs</p>
+            <p>Domingos: 18 a 21 hs</p>
+        </div>
+        
+       <div id="alertenviar" class="alertenviar">
+  <p>Tu comprobante se está descargando... Envíalo por WhatsApp cuando se descargue (adjúntalo), MUCHAS GRACIAS POR TU COMPRA.</p>
+  <button id="btnCerrarAlerta">Cerrar</button>
+</div>
+        
+        <!-- Envíos a domicilio -->
+<div class="footer-shipping">
+    <h3>SAN PEDRO <hr> Provincia de Buenos Aires Argentina</h3>
+</div>
+    <div class="footer-info">
+        <p>&copy; 2025 Mayorista <span class="footer-nombre">Sin Límites</span>. Todos los derechos reservados.</p>
+    </div>
+</footer>
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <script type="module" src="productos-todos-1.js"></script>
+    <script src="producto2.js"></script>
+    <script type="module" src="producto.js"></script>
+</body>
+</html>
