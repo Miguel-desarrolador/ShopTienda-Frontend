@@ -552,7 +552,7 @@ formData.append('pdf', pdfBlob, 'comprobante.pdf');
 
 // Enviar al backend
 
-fetch('http://mayorista-sinlimites-backend-production.up.railway.app/upload-pdf', {
+fetch('https://mayorista-sinlimites-backend-production.up.railway.app/upload-pdf', {
   method: 'POST',
   body: formData
 })
