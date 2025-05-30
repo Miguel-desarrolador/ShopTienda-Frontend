@@ -224,7 +224,7 @@ window.modificarStock = async function(id) {
 
   try {
     const data = await actualizarStock(id, nuevoStock);
-    alert("Stock actualizado correctamente");
+    
     document.getElementById(`stock-${id}`).textContent = nuevoStock;
     input.value = '';
   } catch (error) {
@@ -568,8 +568,7 @@ fetch('https://mayorista-sinlimites-backend-production.up.railway.app/upload-pdf
     // Abrir WhatsApp con el mensaje prearmado
     window.open(whatsappUrl, '_blank');
     
-    // Mostrar alerta o lo que quieras
-    alert('PDF subido y link enviado por WhatsApp.');
+   
   } else {
     alert('Error al subir PDF');
   }
