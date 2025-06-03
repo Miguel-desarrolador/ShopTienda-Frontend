@@ -124,27 +124,26 @@ async function obtenerProductos() {
       const variantesContainer = document.createElement('div');
       variantesContainer.classList.add('variantes');
       variantesContainer.style.display = 'none';
+producto.variantes.forEach(vari => {
+  const stock = vari.stock !== undefined ? vari.stock : 0;
+  const precio = vari.precio !== undefined ? vari.precio : 0;
 
-      producto.variantes.forEach(vari => {
-        const stock = vari.stock !== undefined ? vari.stock : 0;
-        const precio = vari.precio !== undefined ? vari.precio : 0;
-
-        const varianteDiv = document.createElement('div');
-        varianteDiv.classList.add('variant');
-
- varianteDiv.innerHTML = `
+ const varianteDiv = document.createElement('div');
+varianteDiv.classList.add('variant');
+varianteDiv.id = `variant-${vari.id}`;  // <--- Importante para eliminarlo después
+varianteDiv.innerHTML = `
   <img src="${vari.imagen}" alt="Variante de ${producto.nombre}" onError="this.onerror=null;this.src='path/to/default-image.jpg';">
-  <p>Precio: $${precio}</p>
-  <p>Stock: <span id="stock-${vari.id}">${stock}</span></p>
+  <p>Precio: $${vari.precio}</p>
+  <p>Stock: <span id="stock-${vari.id}">${vari.stock}</span></p>
 
   <button class="agregar-carrito"
     data-id="${vari.id}"
     data-nombre="${producto.nombre}"
-    data-precio="${precio}"
-    data-stock="${stock}"
+    data-precio="${vari.precio}"
+    data-stock="${vari.stock}"
     data-imagen="${vari.imagen}"
-    ${stock === 0 ? 'disabled style="background-color:gray;"' : ''}>
-    ${stock === 0 ? 'Sin stock' : 'Agregar al carrito'}
+    ${vari.stock === 0 ? 'disabled style="background-color:gray;"' : ''}>
+    ${vari.stock === 0 ? 'Sin stock' : 'Agregar al carrito'}
   </button>
 
   <div class="solo-empleado" style="display: none; margin-top: 6px;">
@@ -154,13 +153,13 @@ async function obtenerProductos() {
       onclick="modificarStock(${vari.id})">
       Actualizar Stock
     </button>
+
   </div>
-`;
+  `;
 
+  variantesContainer.appendChild(varianteDiv);
+});
 
-
-        variantesContainer.appendChild(varianteDiv);
-      });
 
       toggleButton.addEventListener('click', () => {
         if (variantesContainer.style.display === 'none') {
@@ -287,6 +286,7 @@ function renderizarCarrito() {
     });
   });
 }
+
 
 
 async function actualizarCantidad(id, accion) {
