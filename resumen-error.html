@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Error al generar pedido</title>
+  <style>
+  
+  body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+  padding: 30px;
+  color: #2c3e50;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h2 {
+  color: #e74c3c;
+  font-weight: 700;
+  font-size: 2rem;
+  margin-bottom: 10px;
+  text-align: center;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.aviso {
+  background: #fff3cd;
+  color: #856404;
+  padding: 20px 25px;
+  border-left: 6px solid #ffca2c;
+  border-radius: 8px;
+  margin: 30px 0;
+  max-width: 600px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  font-size: 1.1rem;
+  line-height: 1.4;
+}
+
+.resumen {
+  background: #ffffffcc; /* blanco semitransparente */
+  padding: 25px 30px;
+  border-radius: 15px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+  max-width: 700px;
+  width: 100%;
+  color: #34495e;
+  font-size: 1rem;
+  line-height: 1.5;
+  overflow-y: auto;
+  max-height: 60vh;
+}
+
+.resumen h3 {
+  border-bottom: 2px solid #e74c3c;
+  padding-bottom: 6px;
+  margin-top: 20px;
+  font-weight: 600;
+  color: #c0392b;
+}
+
+.producto {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 12px 15px;
+  margin-bottom: 15px;
+  box-shadow: inset 0 0 5px #e0e0e0;
+  transition: background-color 0.3s ease;
+}
+
+.producto:hover {
+  background-color: #f1f5f9;
+}
+
+.producto img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  flex-shrink: 0;
+}
+
+.info-producto p {
+  margin: 4px 0;
+}
+
+
+.producto p {
+  margin: 5px 0;
+}
+
+.boton {
+  background: linear-gradient(135deg, #6dd5fa, #2980b9);
+  color: white;
+  padding: 14px 32px;
+  border: none;
+  font-size: 18px;
+  border-radius: 50px;
+  cursor: pointer;
+  margin-top: 30px;
+  box-shadow: 0 6px 12px rgba(41, 128, 185, 0.5);
+  transition: background 0.3s ease, transform 0.2s ease;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.boton:hover {
+  background: linear-gradient(135deg, #2980b9, #6dd5fa);
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  body {
+    padding: 15px;
+  }
+  .resumen {
+    max-height: 50vh;
+    padding: 20px;
+  }
+  .boton {
+    width: 100%;
+    font-size: 16px;
+    padding: 12px;
+  }
+}
+
+  </style>
+</head>
+<body>
+
+  <h2>Hubo un error, pero te damos otra solución</h2>
+
+  <div class="aviso">
+    <p>Descargá el comprobante y enviánoslo manualmente por WhatsApp haciendo clic en el botón de abajo.</p>
+  </div>
+
+  <div class="resumen" id="resumen-pedido"></div>
+
+  <button class="boton" id="descargarPDF">Descargar PDF</button>
+
+  <script>
+    const datos = JSON.parse(localStorage.getItem('pedidoBackup'));
+
+    const contenedor = document.getElementById('resumen-pedido');
+    if (datos) {
+      let html = `
+        <h3>Datos del cliente</h3>
+        <p><strong>Nombre:</strong> ${datos.cliente.nombreApellido}</p>
+        <p><strong>DNI:</strong> ${datos.cliente.dni}</p>
+        <p><strong>Celular:</strong> ${datos.cliente.celular}</p>
+        <p><strong>Provincia:</strong> ${datos.cliente.provincia}</p>
+        <p><strong>Localidad:</strong> ${datos.cliente.localidad}</p>
+        <p><strong>Código Postal:</strong> ${datos.cliente.cp}</p>
+        <p><strong>Correo:</strong> ${datos.cliente.mail}</p>
+        <p><strong>Método de Envío:</strong> ${datos.cliente.metodoEnvio}</p>
+        <h3>Productos</h3>
+      `;
+
+      let total = 0;
+     datos.carrito.forEach((prod, i) => {
+  const subtotal = prod.precio * prod.cantidad;
+  total += subtotal;
+  html += `
+    <div class="producto">
+      <img src="${prod.imagen}" alt="${prod.nombre}" />
+      <div class="info-producto">
+        <p><strong>${i + 1}. ${prod.nombre}</strong></p>
+        <p>Precio: $${prod.precio} - Cantidad: ${prod.cantidad}</p>
+        <p>Subtotal: $${subtotal}</p>
+      </div>
+    </div>
+  `;
+});
+
+
+      html += `<h3>Total: $${total}</h3>`;
+      contenedor.innerHTML = html;
+    }
+
+    document.getElementById('descargarPDF').addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.href = datos.pdfDataURL;
+      link.download = 'comprobante.pdf';
+      link.click();
+    });
+  </script>
+</body>
+</html>

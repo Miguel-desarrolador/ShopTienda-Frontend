@@ -1,3 +1,30 @@
+#btn-autocompletar {
+  background-color: #4CAF50;      /* Verde agradable */
+  color: white;                   /* Texto blanco */
+  border: none;                  /* Sin bordes */
+  padding: 10px 20px;            /* Espaciado cómodo */
+  font-size: 16px;               /* Tamaño de letra legible */
+  border-radius: 5px;            /* Bordes redondeados */
+  cursor: pointer; 
+  margin: 10px;          /* Cambia el cursor al pasar por encima */
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+#btn-autocompletar:hover {
+  background-color: #45a049;     /* Verde más oscuro al pasar el mouse */
+}
+
+.contenedor-boton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px; /* Espaciado opcional */
+}
+
+
+
+
 .alertenviar {
   position: fixed;
   top: 50%;

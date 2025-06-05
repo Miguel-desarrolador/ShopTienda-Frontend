@@ -441,10 +441,37 @@ document.getElementById('compra-form').addEventListener('submit', function (e) {
   const localidad = document.getElementById('localidad').value;
   const cp = document.getElementById('cp').value;
   const mail = document.getElementById('mail').value;
-const metodoEnvio = document.getElementById('metodo-envio').value;
+  const metodoEnvio = document.getElementById('metodo-envio').value;
 
   // Obtener carrito
   const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+
+  const productosSinStock = carrito.filter(producto => producto.cantidad > producto.stock);
+
+  if (productosSinStock.length > 0) {
+    let mensaje = 'No hay stock suficiente para los siguientes productos:\n';
+    productosSinStock.forEach(prod => {
+      mensaje += `- ${prod.nombre} (Stock disponible: ${prod.stock}, Cantidad solicitada: ${prod.cantidad})\n`;
+    });
+    alert(mensaje);
+    return;
+  }
+
+  // Guardar datos del cliente para autocompletar la próxima vez
+  const cliente = {
+    nombreApellido,
+    dni,
+    celular,
+    provincia,
+    localidad,
+    cp,
+    mail,
+    metodoEnvio
+  };
+  localStorage.setItem('datosCliente', JSON.stringify(cliente));
+  
+
+
 
   // Crear PDF con jsPDF
   const { jsPDF } = window.jspdf;
@@ -468,16 +495,16 @@ const metodoEnvio = document.getElementById('metodo-envio').value;
   doc.setTextColor(0, 0, 0);
   let y = 45;
   
-const datosCliente = [
-  { label: 'Nombre y Apellido', value: nombreApellido },
-  { label: 'DNI', value: dni },
-  { label: 'Celular', value: celular },
-  { label: 'Provincia', value: provincia },
-  { label: 'Localidad', value: localidad },
-  { label: 'Código Postal', value: cp },
-  { label: 'Correo Electrónico', value: mail },
-  { label: 'Método de Envío', value: metodoEnvio }
-];
+  const datosCliente = [
+    { label: 'Nombre y Apellido', value: nombreApellido },
+    { label: 'DNI', value: dni },
+    { label: 'Celular', value: celular },
+    { label: 'Provincia', value: provincia },
+    { label: 'Localidad', value: localidad },
+    { label: 'Código Postal', value: cp },
+    { label: 'Correo Electrónico', value: mail },
+    { label: 'Método de Envío', value: metodoEnvio }
+  ];
 
   datosCliente.forEach((item) => {
     doc.text(`${item.label}:`, 10, y);
@@ -493,34 +520,35 @@ const datosCliente = [
   doc.setFont("helvetica", "bold");
   doc.text("Productos en el carrito:", 10, y);
   doc.setFont("helvetica", "normal");
-y += 10;
-let totalCompra = 0;
+  y += 10;
 
-carrito.forEach((producto, index) => {
-  if (y > 250) { // Nueva página si se pasa
-    doc.addPage();
-    y = 20;
-  }
+  let totalCompra = 0;
 
-  // Imagen si existe
-  if (producto.imagen) {
-    doc.addImage(producto.imagen, 'JPG', 10, y, 30, 30);
-  }
+  carrito.forEach((producto, index) => {
+    if (y > 250) { // Nueva página si se pasa
+      doc.addPage();
+      y = 20;
+    }
 
-  let textX = producto.imagen ? 50 : 10;
+    // Imagen si existe
+    if (producto.imagen) {
+      doc.addImage(producto.imagen, 'JPG', 10, y, 30, 30);
+    }
 
-  doc.setFont("helvetica", "bold");
-  doc.text(`${index + 1}. ${producto.nombre}`, textX, y + 10);
+    let textX = producto.imagen ? 50 : 10;
 
-  doc.setFont("helvetica", "normal");
-  doc.text(`Precio: $${producto.precio.toFixed(2)} - Cantidad: ${producto.cantidad}`, textX, y + 15);
+    doc.setFont("helvetica", "bold");
+    doc.text(`${index + 1}. ${producto.nombre}`, textX, y + 10);
 
-  const subtotal = producto.precio * producto.cantidad;
-  doc.text(`Subtotal: $${subtotal.toFixed(2)}`, textX, y + 20);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Precio: $${producto.precio.toFixed(2)} - Cantidad: ${producto.cantidad}`, textX, y + 15);
 
-  totalCompra += subtotal;
-  y += 40;
-});
+    const subtotal = producto.precio * producto.cantidad;
+    doc.text(`Subtotal: $${subtotal.toFixed(2)}`, textX, y + 20);
+
+    totalCompra += subtotal;
+    y += 40;
+  });
 
   // Línea antes total
   doc.setLineWidth(0.5);
@@ -543,24 +571,21 @@ doc.text("Gracias por tu compra. ¡Esperamos verte pronto!", 10, y);
   document.getElementById("alertenviar").style.display = "block";
   document.getElementById("alertenviar").style.animation = "fadeIn 0.4s ease-in-out";
 
-doc.output('blob');  // obtener PDF como Blob
+  // Crear FormData para enviar archivo al backend
+  const pdfBlob = doc.output('blob');
+  const formData = new FormData();
+  formData.append('pdf', pdfBlob, 'comprobante.pdf');
 
-// Crear FormData para enviar archivo al backend
-const pdfBlob = doc.output('blob');
-const formData = new FormData();
-formData.append('pdf', pdfBlob, 'comprobante.pdf');
-
-// Enviar al backend
-
-fetch('https://mayorista-sinlimites-backend-production.up.railway.app/upload-pdf', {
-  method: 'POST',
-  body: formData
-})
-.then(res => res.json())
-.then(data => {
-  if(data.url){
-    // data.url es el link público del PDF alojado
-    console.log('PDF alojado en:', data.url);
+  // Enviar al backend
+  fetch('https://mayorista-sinlimites-backend-production.up.railway.app/uplod-pdf', {
+    method: 'POST',
+    body: formData
+  })
+  .then(res => res.json())
+  .then(data => {
+    if(data.url){
+      // data.url es el link público del PDF alojado
+      console.log('PDF alojado en:', data.url);
 
     // Ahora podés armar el link para WhatsApp con ese URL
     const whatsappUrl = `https://wa.me/5493329317141?text=Hola,%20quiero%20confirmar%20mi%20pedido%20aquí:%20${encodeURIComponent(data.url)}`;
@@ -569,14 +594,39 @@ fetch('https://mayorista-sinlimites-backend-production.up.railway.app/upload-pdf
     window.open(whatsappUrl, '_blank');
     
    
-  } else {
-    alert('Error al subir PDF');
+  } else { 
+   mostrarAlert('Hubo un error, pero te damos otra solución');
   }
-})
+})  
 .catch(err => {
-  console.error(err);
-  alert('Error al subir PDF');
-});
+    console.error(err);
+mostrarAlert('Hubo un error, pero te damos otra solución');
+
+    // Plan B: guardar datos y redirigir al HTML alternativo
+    const reader = new FileReader();
+    reader.onload = function () {
+      const pdfDataURL = reader.result;
+
+      const pedidoBackup = {
+        cliente: {
+          nombreApellido,
+          dni,
+          celular,
+          provincia,
+          localidad,
+          cp,
+          mail,
+          metodoEnvio
+        },
+        carrito,
+        pdfDataURL
+      };
+
+      localStorage.setItem('pedidoBackup', JSON.stringify(pedidoBackup));
+      window.location.href = 'resumen-error.html';
+    };
+    reader.readAsDataURL(pdfBlob);
+  });
 
 
   // Limpiar carrito
@@ -589,6 +639,7 @@ fetch('https://mayorista-sinlimites-backend-production.up.railway.app/upload-pdf
     formulario.style.display = 'none';
   }, 300);
 });
+
 
 
 document.getElementById("btnCerrarAlerta").addEventListener("click", cerrarAlerta);
@@ -660,3 +711,20 @@ function mostrarAlerta(mensaje) {
     alerta.classList.remove('mostrar');
   }, 3000); // Desaparece después de 3 segundos
 }
+
+document.getElementById('btn-autocompletar').addEventListener('click', () => {
+  const datosGuardados = JSON.parse(localStorage.getItem('datosCliente'));
+  
+  if (datosGuardados) {
+    document.getElementById('nombre-apellido').value = datosGuardados.nombreApellido || '';
+    document.getElementById('dni').value = datosGuardados.dni || '';
+    document.getElementById('celular').value = datosGuardados.celular || '';
+    document.getElementById('provincia').value = datosGuardados.provincia || '';
+    document.getElementById('localidad').value = datosGuardados.localidad || '';
+    document.getElementById('cp').value = datosGuardados.cp || '';
+    document.getElementById('mail').value = datosGuardados.mail || '';
+    document.getElementById('metodo-envio').value = datosGuardados.metodoEnvio || '';
+  } else {
+    alert('No hay datos guardados para autocompletar.');
+  }
+});
