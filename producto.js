@@ -595,7 +595,7 @@ doc.text("Gracias por tu compra. ¡Esperamos verte pronto!", 10, y);
     
    
   } else { 
-   mostrarAlert('Hubo un error, pero te damos otra solución');
+    mayorAlert('Hubo un error, pero te damos otra solución');
   }
 })  
 .catch(err => {
