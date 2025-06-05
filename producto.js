@@ -594,13 +594,13 @@ doc.text("Gracias por tu compra. ¡Esperamos verte pronto!", 10, y);
     window.open(whatsappUrl, '_blank');
     
    
-  } else { 
-    mayorAlert('Hubo un error, pero te damos otra solución');
+  } else {
+    alert('Hubo un error, pero te damos otra solución');
   }
 })  
 .catch(err => {
     console.error(err);
-mostrarAlert('Hubo un error, pero te damos otra solución');
+    alert('Error al subir PDF');
 
     // Plan B: guardar datos y redirigir al HTML alternativo
     const reader = new FileReader();
