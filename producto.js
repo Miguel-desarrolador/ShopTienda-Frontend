@@ -577,7 +577,7 @@ doc.text("Gracias por tu compra. ¡Esperamos verte pronto!", 10, y);
   formData.append('pdf', pdfBlob, 'comprobante.pdf');
 
   // Enviar al backend
-  fetch('https://mayorista-sinlimites-backend-production.up.railway.app/uplod-pdf', {
+  fetch('https://mayorista-sinlimites-backend-production.up.railway.app/upload-pdf', {
     method: 'POST',
     body: formData
   })
