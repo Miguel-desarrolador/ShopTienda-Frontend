@@ -570,11 +570,18 @@ doc.text("Gracias por tu compra. ¡Esperamos verte pronto!", 10, y);
   // Mostrar alerta o feedback (opcional)
   document.getElementById("alertenviar").style.display = "block";
   document.getElementById("alertenviar").style.animation = "fadeIn 0.4s ease-in-out";
+// Crear FormData para enviar archivo al backend
+const pdfBlob = doc.output('blob');
 
-  // Crear FormData para enviar archivo al backend
-  const pdfBlob = doc.output('blob');
-  const formData = new FormData();
-  formData.append('pdf', pdfBlob, 'comprobante.pdf');
+// 👉 Descargar automáticamente el PDF
+const downloadLink = document.createElement('a');
+downloadLink.href = URL.createObjectURL(pdfBlob);
+downloadLink.download = 'comprobante.pdf';
+downloadLink.click();
+
+// Preparar datos para enviar
+const formData = new FormData();
+formData.append('pdf', pdfBlob, 'comprobante.pdf');
 
   // Enviar al backend
   fetch('https://mayorista-sinlimites-backend-production.up.railway.app/upload-pdf', {
