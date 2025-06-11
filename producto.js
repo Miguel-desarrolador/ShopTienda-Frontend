@@ -570,7 +570,9 @@ doc.text("Gracias por tu compra. ¡Esperamos verte pronto!", 10, y);
   // Mostrar alerta o feedback (opcional)
   document.getElementById("alertenviar").style.display = "block";
   document.getElementById("alertenviar").style.animation = "fadeIn 0.4s ease-in-out";
-// Crear FormData para enviar archivo al backend
+
+
+  // Crear Blob del PDF
 const pdfBlob = doc.output('blob');
 
 // 👉 Descargar automáticamente el PDF
@@ -579,72 +581,78 @@ downloadLink.href = URL.createObjectURL(pdfBlob);
 downloadLink.download = 'comprobante.pdf';
 downloadLink.click();
 
-// Preparar datos para enviar
+// ✅ Generar nombre único para el archivo
+const uniqueFileName = `pedido-${Date.now()}-${Math.random().toString(36).substring(2)}.pdf`;
+
+// ✅ Crear FormData y adjuntar el archivo con nombre único
 const formData = new FormData();
-formData.append('pdf', pdfBlob, 'comprobante.pdf');
+formData.append('pdf', pdfBlob, uniqueFileName); // ← este nombre es el que se envía al backend
+
 
   // Enviar al backend
-  fetch('https://mayorista-sinlimites-backend-production.up.railway.app/upload-pdf', {
-    method: 'POST',
-    body: formData
-  })
-  .then(res => res.json())
-  .then(data => {
-    if(data.url){
-      // data.url es el link público del PDF alojado
-      console.log('PDF alojado en:', data.url);
+fetch('https://mayorista-sinlimites-backend-production.up.railway.app/upload-pdf', {
+  method: 'POST',
+  body: formData
+})
+.then(res => res.json())
+.then(data => {
+  if (data.url) {
+    console.log('PDF alojado en:', data.url);
 
-    // Ahora podés armar el link para WhatsApp con ese URL
     const whatsappUrl = `https://wa.me/5493329317141?text=Hola,%20quiero%20confirmar%20mi%20pedido%20aquí:%20${encodeURIComponent(data.url)}`;
-    
-    // Abrir WhatsApp con el mensaje prearmado
     window.open(whatsappUrl, '_blank');
-    
-   
+
+    // ✅ Solo limpiar carrito y cerrar formulario si todo fue bien
+    finalizarProceso();
   } else {
     alert('Hubo un error, pero te damos otra solución');
+    guardarBackupYRedirigir();
   }
-})  
+})
 .catch(err => {
-    console.error(err);
-    alert('Error al subir PDF');
+  console.error(err);
+  alert('Error al subir PDF');
+  guardarBackupYRedirigir();
+});
 
-    // Plan B: guardar datos y redirigir al HTML alternativo
-    const reader = new FileReader();
-    reader.onload = function () {
-      const pdfDataURL = reader.result;
+function guardarBackupYRedirigir() {
+  const reader = new FileReader();
+  reader.onload = function () {
+    const pdfDataURL = reader.result;
 
-      const pedidoBackup = {
-        cliente: {
-          nombreApellido,
-          dni,
-          celular,
-          provincia,
-          localidad,
-          cp,
-          mail,
-          metodoEnvio
-        },
-        carrito,
-        pdfDataURL
-      };
-
-      localStorage.setItem('pedidoBackup', JSON.stringify(pedidoBackup));
-      window.location.href = 'resumen-error.html';
+    const pedidoBackup = {
+      cliente: {
+        nombreApellido,
+        dni,
+        celular,
+        provincia,
+        localidad,
+        cp,
+        mail,
+        metodoEnvio
+      },
+      carrito,
+      pdfDataURL
     };
-    reader.readAsDataURL(pdfBlob);
-  });
 
+    localStorage.setItem('pedidoBackup', JSON.stringify(pedidoBackup));
+    window.location.href = 'resumen-error.html';
 
-  // Limpiar carrito
+    // ✅ Limpiar y cerrar también si hubo error
+    finalizarProceso();
+  };
+  reader.readAsDataURL(pdfBlob);
+}
+
+function finalizarProceso() {
   localStorage.removeItem('carrito');
-
-  // Cerrar formulario con animación
   const formulario = document.getElementById('formulario-compra');
   formulario.classList.remove('formulario-visible');
   setTimeout(() => {
     formulario.style.display = 'none';
   }, 300);
+}
+
 });
 
 
