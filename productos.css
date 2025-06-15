@@ -1,3 +1,94 @@
+/* Contenedor alerta */
+.stock-alerta {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(145deg, #ffe5e5, #fffafa);
+  border: 2px solid #ef5350;
+  color: #b71c1c;
+  padding: 30px 35px;
+  border-radius: 16px;
+  box-shadow: 0 15px 30px rgba(244, 67, 54, 0.25);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  max-width: 95%;
+  width: 400px;
+  font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  z-index: 9999;
+  animation: alertaFadeIn 0.4s ease forwards;
+  backdrop-filter: blur(6px);
+}
+
+/* Texto */
+.stock-alerta p {
+  margin: 0 0 20px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.6;
+  color: #b71c1c;
+}
+
+/* Contenedor botones */
+.alerta-botones {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+/* Botones */
+.alerta-botones button {
+  flex: 1 1 45%;
+  padding: 12px;
+  font-size: 15.5px;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  user-select: none;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Botón Seguir comprando - gris moderno */
+#btn-seguir-comprando {
+  background-color: #14711f;
+  color: #fff;
+}
+
+#btn-seguir-comprando:hover {
+  background-color: #032803;
+  transform: translateY(-1px);
+}
+
+/* Botón Finalizar compra - rojo moderno */
+#btn-finalizar-compra {
+  background-color: #c62828;
+  color: #fff;
+}
+
+#btn-finalizar-compra:hover {
+  background-color: #490606;
+  transform: translateY(-1px);
+}
+
+/* Animación aparición */
+@keyframes alertaFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
 #btn-autocompletar {
   background-color: #4CAF50;      /* Verde agradable */
   color: white;                   /* Texto blanco */
@@ -263,7 +354,7 @@
   border-radius: 10px;
   width: 90vw;
   max-width: 550px;
-  z-index: 9999;
+  z-index: 1800;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
   display: none;
   flex-direction: column;
