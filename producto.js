@@ -507,16 +507,21 @@ document.getElementById('compra-form').addEventListener('submit', async function
       const stockDisponible = data.stock;
       const cantidadDeseada = item.cantidad;
 
-      if (cantidadDeseada > stockDisponible) {
-        if (stockDisponible > 0) {
-          const cantidadRemovida = cantidadDeseada - stockDisponible;
-          item.cantidad = stockDisponible;
-          productosAjustados.push(`"${item.nombre}" (Se eliminaron ${cantidadRemovida} unidades, stock actual: ${stockDisponible})`);
-        } else {
-          productosAjustados.push(`"${item.nombre}" (Se eliminó del carrito, stock agotado)`);
-          carrito.splice(i, 1);
-        }
-      }
+    if (cantidadDeseada > stockDisponible) {
+  if (stockDisponible > 0) {
+    const cantidadRemovida = cantidadDeseada - stockDisponible;
+    item.cantidad = stockDisponible;
+    productosAjustados.push(
+      `"${item.nombre}" (Otro cliente compró recientemente este producto. Se eliminaron ${cantidadRemovida} unidades. Stock actual: ${stockDisponible})`
+    );
+  } else {
+    productosAjustados.push(
+      `"${item.nombre}" (Otro cliente compró recientemente este producto. Se eliminó del carrito porque ya no hay stock disponible)`
+    );
+    carrito.splice(i, 1);
+  }
+}
+
     }
 
     if (productosAjustados.length > 0) {
