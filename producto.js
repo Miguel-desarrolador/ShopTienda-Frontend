@@ -154,11 +154,35 @@ varianteDiv.innerHTML = `
       onclick="modificarStock(${vari.id})">
       Actualizar Stock
     </button>
+<button 
+  class="boton-eliminar-variacion" 
+  style="
+    margin-top: 6px; 
+    background-color: crimson; 
+    color: white; 
+    border: none; 
+    padding: 6px 12px; 
+    border-radius: 6px; 
+    cursor: pointer; 
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  "
+  onclick="eliminarProducto(${vari.id})">
+  🗑️ Eliminar producto
+</button>
+
+
 
   </div>
   `;
 
   variantesContainer.appendChild(varianteDiv);
+  const btnEliminar = varianteDiv.querySelector('.boton-eliminar-variacion');
+// Quitar onclick inline del botón para evitar doble disparo
+btnEliminar.removeAttribute('onclick');
+
+btnEliminar.addEventListener('click', () => eliminarProducto(vari.id));
+
 });
 
 
@@ -187,7 +211,42 @@ varianteDiv.innerHTML = `
     console.error('Error al obtener los productos:', error);
   }
 }
+let idAEliminar = null; // o let idEliminar = null;
 
+function eliminarProducto(id) {
+  idAEliminar = id; // guardamos el id
+  document.getElementById('confirmacion').style.display = 'flex';
+}
+
+document.getElementById('btn-cancelar').addEventListener('click', () => {
+  document.getElementById('confirmacion').style.display = 'none';
+  idAEliminar = null;
+});
+
+document.getElementById('btn-confirmar').addEventListener('click', () => {
+  if (!idAEliminar) return;
+
+  fetch(`https://mayorista-sinlimites-backend-production.up.railway.app/productos/variantes/${idAEliminar}`, {
+    method: 'DELETE',
+  })
+  .then(response => {
+    if (response.ok) {
+      const div = document.getElementById(`variant-${idAEliminar}`);
+      if (div) div.remove();
+      mostrarAlerta('Producto eliminado');
+    } else {
+      alert('No se pudo eliminar este producto');
+    }
+    document.getElementById('confirmacion').style.display = 'none';
+    idAEliminar = null;
+  })
+  .catch(error => {
+    console.error('Error al eliminar:', error);
+    alert('Error al conectar con el servidor');
+    document.getElementById('confirmacion').style.display = 'none';
+    idAEliminar = null;
+  });
+});
 
 
 
