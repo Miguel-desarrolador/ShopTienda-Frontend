@@ -211,6 +211,8 @@ btnEliminar.addEventListener('click', () => eliminarProducto(vari.id));
     console.error('Error al obtener los productos:', error);
   }
 }
+
+
 let idAEliminar = null; // o let idEliminar = null;
 
 function eliminarProducto(id) {
