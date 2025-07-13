@@ -447,6 +447,10 @@ if (boton) {
 }
 
 
+
+
+
+
 document.getElementById('finalizar-compra').addEventListener('click', async () => {
   const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
@@ -550,8 +554,14 @@ document.getElementById('cerrar-formulario').addEventListener('click', () => {
   }, 300);
 });
 
-// VALIDACIÓN DE STOCK Y FORMULARIO DE DATOS
 
+
+
+
+
+
+
+// VALIDACIÓN DE STOCK Y FORMULARIO DE DATOS
 document.getElementById('compra-form').addEventListener('submit', async function (e) {
   e.preventDefault();
 
@@ -559,31 +569,36 @@ document.getElementById('compra-form').addEventListener('submit', async function
   const productosAjustados = [];
 
   try {
-    for (let i = carrito.length - 1; i >= 0; i--) {
-      const item = carrito[i];
-      const res = await fetch(`https://mayorista-sinlimites-backend-production.up.railway.app/productos/variantes/${item.id}`);
-      if (!res.ok) throw new Error('Error al consultar stock');
+    const fetches = carrito.map(item =>
+      fetch(`https://mayorista-sinlimites-backend-production.up.railway.app/productos/variantes/${item.id}`)
+        .then(res => {
+          if (!res.ok) throw new Error('Error al consultar stock');
+          return res.json();
+        })
+    );
 
-      const data = await res.json();
+    const resultados = await Promise.all(fetches);
+
+    resultados.forEach((data, i) => {
+      const item = carrito[i];
       const stockDisponible = data.stock;
       const cantidadDeseada = item.cantidad;
 
-    if (cantidadDeseada > stockDisponible) {
-  if (stockDisponible > 0) {
-    const cantidadRemovida = cantidadDeseada - stockDisponible;
-    item.cantidad = stockDisponible;
-    productosAjustados.push(
-      `"${item.nombre}" (Otro cliente compró recientemente este producto. Se eliminaron ${cantidadRemovida} unidades. Stock actual: ${stockDisponible})`
-    );
-  } else {
-    productosAjustados.push(
-      `"${item.nombre}" (Otro cliente compró recientemente este producto. Se eliminó del carrito porque ya no hay stock disponible)`
-    );
-    carrito.splice(i, 1);
-  }
-}
-
-    }
+      if (cantidadDeseada > stockDisponible) {
+        if (stockDisponible > 0) {
+          const cantidadRemovida = cantidadDeseada - stockDisponible;
+          item.cantidad = stockDisponible;
+          productosAjustados.push(
+            `"${item.nombre}" (Otro cliente compró recientemente este producto. Se eliminaron ${cantidadRemovida} unidades. Stock actual: ${stockDisponible})`
+          );
+        } else {
+          productosAjustados.push(
+            `"${item.nombre}" (Otro cliente compró recientemente este producto. Se eliminó del carrito porque ya no hay stock disponible)`
+          );
+          carrito.splice(i, 1);
+        }
+      }
+    });
 
     if (productosAjustados.length > 0) {
       localStorage.setItem('carrito', JSON.stringify(carrito));
@@ -606,6 +621,8 @@ document.getElementById('compra-form').addEventListener('submit', async function
     mayorAlerta('❌ Ocurrió un error al verificar el stock.');
   }
 });
+
+
 
 // FORMULARIO DE COMPRA Y DESCUENTO DE STOCK
 
