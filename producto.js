@@ -309,19 +309,22 @@ function renderizarCarrito() {
     const subtotal = precioUnitario * item.cantidad;
     total += subtotal;
 
-    itemDiv.innerHTML = `
-      <img class="img-producto" style="width: 40%; height: 40%;" src="${item.imagen || 'path/to/default-image.jpg'}" alt="${item.nombre}">
-      <div class="img-pro">
-        <h6>${item.nombre}</h6>
-       
-        <h4>Precio unitario: $${precioUnitario}</h4>  
-         <p class="cantidad">Cantidad:
-        <button class="btn-cantidad" data-id="${item.id}" data-accion="restar">-</button> <span  id="cantidad-${item.id}">${item.cantidad}</span>
-        <button class="btn-cantidad" data-id="${item.id}" data-accion="sumar">+</button></p>
-        <p class="cantidad">Subtotal: $${subtotal}</p>
-        <button class="eliminar-item" data-id="${item.id}">Eliminar</button>
-      </div>
-    `;
+   itemDiv.innerHTML = `
+  <img class="img-producto" style="width: 40%; height: 40%;" src="${item.imagen || 'path/to/default-image.jpg'}" alt="${item.nombre}">
+  <div class="img-pro">
+    <h6>${item.nombre}</h6>
+   
+    <h4>Precio unitario: $${precioUnitario}</h4>  
+     <p class="cantidad">Cantidad:
+    <!-- <button class="btn-cantidad" data-id="${item.id}" data-accion="restar">-</button> --> 
+    <span  id="cantidad-${item.id}">${item.cantidad}</span>
+    <!-- <button class="btn-cantidad" data-id="${item.id}" data-accion="sumar">+</button> -->
+    </p>
+    <p class="cantidad">Subtotal: $${subtotal}</p>
+    <button class="eliminar-item" data-id="${item.id}">Eliminar</button>
+  </div>
+`;
+
 
     carritoItems.appendChild(itemDiv);
   });
