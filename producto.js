@@ -56,22 +56,15 @@ function actualizarContadorCarrito() {
   document.getElementById('contador').textContent = totalCantidad;
 }
 
-async function obtenerProductos() {
-  try {
-    const response = await fetch('https://mayorista-sinlimites-backend-production.up.railway.app/productos');
-    if (!response.ok) throw new Error('No se pudieron obtener los productos');
-
-    const productos = await response.json();
-    const container = document.getElementById('productos');
-    container.innerHTML = '';
+// Función para agregar producto al carrito, fuera de obtenerProductos
 function agregarAlCarrito(event) {
-  const id = event.target.getAttribute('data-id');
+  const id = Number(event.target.getAttribute('data-id'));
   const nombre = event.target.getAttribute('data-nombre');
   const precio = parseFloat(event.target.getAttribute('data-precio')) || 0;
   const imagen = event.target.getAttribute('data-imagen');
 
   let stockElemento = document.getElementById(`stock-${id}`);
-  let stock = parseInt(stockElemento.textContent);
+  let stock = Number(stockElemento.textContent) || 0;
 
   if (stock > 0) {
     stock -= 1;
@@ -91,9 +84,6 @@ function agregarAlCarrito(event) {
     actualizarContadorCarrito();
     renderizarCarrito();
 
-    // **Quitar la llamada a actualizarStock aquí**
-    // actualizarStock(id, stock).catch(error => console.error('Error al actualizar el stock:', error));
-
     if (stock === 0) {
       event.target.textContent = "Sin stock";
       event.target.style.backgroundColor = "red";
@@ -108,6 +98,15 @@ function agregarAlCarrito(event) {
   }
 }
 
+// Función para obtener productos y renderizarlos
+async function obtenerProductos() {
+  try {
+    const response = await fetch('https://mayorista-sinlimites-backend-production.up.railway.app/productos');
+    if (!response.ok) throw new Error('No se pudieron obtener los productos');
+
+    const productos = await response.json();
+    const container = document.getElementById('productos');
+    container.innerHTML = '';
 
     productos.forEach(producto => {
       const productoDiv = document.createElement('div');
@@ -125,66 +124,59 @@ function agregarAlCarrito(event) {
       const variantesContainer = document.createElement('div');
       variantesContainer.classList.add('variantes');
       variantesContainer.style.display = 'none';
-producto.variantes.forEach(vari => {
-  const stock = vari.stock !== undefined ? vari.stock : 0;
-  const precio = vari.precio !== undefined ? vari.precio : 0;
 
- const varianteDiv = document.createElement('div');
-varianteDiv.classList.add('variant');
-varianteDiv.id = `variant-${vari.id}`;  // <--- Importante para eliminarlo después
-varianteDiv.innerHTML = `
-  <img src="${vari.imagen}" alt="Variante de ${producto.nombre}" onError="this.onerror=null;this.src='path/to/default-image.jpg';">
-  <p>Precio: $${vari.precio}</p>
-  <p>Stock: <span id="stock-${vari.id}">${vari.stock}</span></p>
+      producto.variantes.forEach(vari => {
+        const varianteDiv = document.createElement('div');
+        varianteDiv.classList.add('variant');
+        varianteDiv.id = `variant-${vari.id}`;
+        varianteDiv.innerHTML = `
+          <img src="${vari.imagen}" alt="Variante de ${producto.nombre}" onError="this.onerror=null;this.src='path/to/default-image.jpg';">
+          <p>Precio: $${vari.precio}</p>
+          <p>Stock: <span id="stock-${vari.id}">${vari.stock}</span></p>
 
-  <button class="agregar-carrito"
-    data-id="${vari.id}"
-    data-nombre="${producto.nombre}"
-    data-precio="${vari.precio}"
-    data-stock="${vari.stock}"
-    data-imagen="${vari.imagen}"
-    ${vari.stock === 0 ? 'disabled style="background-color:gray;"' : ''}>
-    ${vari.stock === 0 ? 'Sin stock' : 'Agregar al carrito'}
-  </button>
+          <button class="agregar-carrito"
+            data-id="${vari.id}"
+            data-nombre="${producto.nombre}"
+            data-precio="${vari.precio}"
+            data-stock="${vari.stock}"
+            data-imagen="${vari.imagen}"
+            ${vari.stock === 0 ? 'disabled style="background-color:gray;"' : ''}>
+            ${vari.stock === 0 ? 'Sin stock' : 'Agregar al carrito'}
+          </button>
 
-  <div class="solo-empleado" style="display: none; margin-top: 6px;">
-    <input class="inputt" type="number" id="nuevoStock-${vari.id}" placeholder="Nuevo stock">
-    <button 
-      class="boton-actualizar-stock" 
-      onclick="modificarStock(${vari.id})">
-      Actualizar Stock
-    </button>
-<button 
-  class="boton-eliminar-variacion" 
-  style="
-    margin-top: 6px; 
-    background-color: crimson; 
-    color: white; 
-    border: none; 
-    padding: 6px 12px; 
-    border-radius: 6px; 
-    cursor: pointer; 
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-  "
-  onclick="eliminarProducto(${vari.id})">
-  🗑️ Eliminar producto
-</button>
+          <div class="solo-empleado" style="display: none; margin-top: 6px;">
+            <input class="inputt" type="number" id="nuevoStock-${vari.id}" placeholder="Nuevo stock">
+            <button 
+              class="boton-actualizar-stock" 
+              onclick="modificarStock(${vari.id})">
+              Actualizar Stock
+            </button>
+            <button 
+              class="boton-eliminar-variacion" 
+              style="
+                margin-top: 6px; 
+                background-color: crimson; 
+                color: white; 
+                border: none; 
+                padding: 6px 12px; 
+                border-radius: 6px; 
+                cursor: pointer; 
+                font-weight: bold;
+                transition: background-color 0.3s ease;
+              "
+              onclick="eliminarProducto(${vari.id})">
+              🗑️ Eliminar producto
+            </button>
+          </div>
+        `;
 
+        variantesContainer.appendChild(varianteDiv);
 
-
-  </div>
-  `;
-
-  variantesContainer.appendChild(varianteDiv);
-  const btnEliminar = varianteDiv.querySelector('.boton-eliminar-variacion');
-// Quitar onclick inline del botón para evitar doble disparo
-btnEliminar.removeAttribute('onclick');
-
-btnEliminar.addEventListener('click', () => eliminarProducto(vari.id));
-
-});
-
+        // Remueve el onclick inline para evitar doble disparo (si quieres, puedes mover esa lógica a un addEventListener)
+        const btnEliminar = varianteDiv.querySelector('.boton-eliminar-variacion');
+        btnEliminar.removeAttribute('onclick');
+        btnEliminar.addEventListener('click', () => eliminarProducto(vari.id));
+      });
 
       toggleButton.addEventListener('click', () => {
         if (variantesContainer.style.display === 'none') {
@@ -201,16 +193,18 @@ btnEliminar.addEventListener('click', () => eliminarProducto(vari.id));
       container.appendChild(productoDiv);
     });
 
-    // Agregar event listeners a los botones AGREGAR AL CARRITO después de renderizar todo
-    const botonesAgregarCarrito = document.querySelectorAll('.agregar-carrito');
-    botonesAgregarCarrito.forEach(boton => {
-      boton.addEventListener('click', agregarAlCarrito);
-    });
-
   } catch (error) {
     console.error('Error al obtener los productos:', error);
   }
 }
+
+// Delegación de evento para agregar productos al carrito
+document.getElementById('productos').addEventListener('click', (event) => {
+  if (event.target.classList.contains('agregar-carrito')) {
+    agregarAlCarrito(event);
+  }
+});
+
 
 
 let idAEliminar = null; // o let idEliminar = null;
@@ -249,8 +243,6 @@ document.getElementById('btn-confirmar').addEventListener('click', () => {
     idAEliminar = null;
   });
 });
-
-
 
 async function actualizarStock(id, stock) {
   const response = await fetch(`https://mayorista-sinlimites-backend-production.up.railway.app/productos/variantes/${id}`, {
@@ -293,7 +285,6 @@ window.modificarStock = async function(id) {
     console.error(error);
   }
 };
-
 function renderizarCarrito() {
   const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
   const carritoItems = document.getElementById('carrito-items');
@@ -302,80 +293,150 @@ function renderizarCarrito() {
   let total = 0;
 
   carrito.forEach(item => {
-    const itemDiv = document.createElement('li');
-    itemDiv.classList.add('tu-clase');
-
     const precioUnitario = parseFloat(item.precio) || 0;
     const subtotal = precioUnitario * item.cantidad;
     total += subtotal;
 
-   itemDiv.innerHTML = `
-  <img class="img-producto" style="width: 40%; height: 40%;" src="${item.imagen || 'path/to/default-image.jpg'}" alt="${item.nombre}">
-  <div class="img-pro">
-    <h6>${item.nombre}</h6>
-   
-    <h4>Precio unitario: $${precioUnitario}</h4>  
-     <p class="cantidad">Cantidad:
-    <!-- <button class="btn-cantidad" data-id="${item.id}" data-accion="restar">-</button> --> 
-    <span  id="cantidad-${item.id}">${item.cantidad}</span>
-    <!-- <button class="btn-cantidad" data-id="${item.id}" data-accion="sumar">+</button> -->
-    </p>
-    <p class="cantidad">Subtotal: $${subtotal}</p>
-    <button class="eliminar-item" data-id="${item.id}">Eliminar</button>
-  </div>
-`;
+    const itemDiv = document.createElement('li');
+    itemDiv.classList.add('tu-clase');
+    itemDiv.dataset.id = item.id; // para referencia rápida
 
+    itemDiv.innerHTML = `
+      <img class="img-producto" style="width: 40%; height: 40%;" src="${item.imagen || 'path/to/default-image.jpg'}" alt="${item.nombre}">
+      <div class="img-pro">
+        <h6>${item.nombre}</h6>
+        <h4>Precio unitario: $${precioUnitario}</h4>  
+        <p class="cantidad">Cantidad:
+          <button class="btn-cantidad restar" data-id="${item.id}">-</button> 
+          <span class="cantidad-valor" id="cantidad-${item.id}">${item.cantidad}</span>
+          <button class="btn-cantidad sumar" data-id="${item.id}">+</button>
+        </p>
+        <p class="cantidad">Subtotal: $${subtotal}</p>
+        <button class="eliminar-item" data-id="${item.id}">Eliminar</button>
+      </div>
+    `;
 
     carritoItems.appendChild(itemDiv);
   });
 
-
   carritoTotal.textContent = `Total: $${total}`;
-
-  // Manejar los botones "+" y "-" para cambiar la cantidad
-  const botonesCantidad = document.querySelectorAll('.btn-cantidad');
-  botonesCantidad.forEach(boton => {
-    boton.addEventListener('click', (e) => {
-      const id = e.target.getAttribute('data-id');
-      const accion = e.target.getAttribute('data-accion');
-      actualizarCantidad(id, accion);
-    });
-  });
-
-  // Manejar los botones de eliminar
-  const botonesEliminar = document.querySelectorAll('.eliminar-item');
-  botonesEliminar.forEach(boton => {
-    boton.addEventListener('click', (e) => {
-      const id = e.target.getAttribute('data-id');
-      eliminarDelCarrito(id);
-    });
-  });
 }
 
+// Manejo rápido sin await en cada click, optimizando la experiencia
+document.getElementById('carrito-items').addEventListener('click', async (e) => {
+  const boton = e.target;
+  const id = Number(boton.getAttribute('data-id'));
+  if (!id) return;
+
+  if (boton.classList.contains('sumar')) {
+    const stockSpan = document.getElementById(`stock-${id}`);
+    let stockActual = Number(stockSpan?.textContent) || 0;
+
+  actualizarEstadoBotonAgregar(id, stockActual - 1);
+    if (stockActual <= 0) {
+      mostrarAlerta('No hay más stock disponible');
+      return;
+    }
+
+    // Actualizar UI inmediatamente
+    const cantidadSpan = document.getElementById(`cantidad-${id}`);
+    let cantidadActual = Number(cantidadSpan.textContent);
+    cantidadSpan.textContent = cantidadActual + 1;
+
+    stockSpan.textContent = stockActual - 1;
+
+    // Actualizar localStorage
+    let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+    const producto = carrito.find(p => p.id === id);
+    if (producto) producto.cantidad += 1;
+    localStorage.setItem('carrito', JSON.stringify(carrito));
+    actualizarContadorCarrito();
+
+    // Actualizar stock en backend (async, no bloquea UI)
+    try {
+      await actualizarStock(id, stockActual - 1);
+    } catch (error) {
+      console.error('Error actualizando stock:', error);
+      mostrarAlerta('Error al actualizar stock en servidor');
+      // Puedes revertir cambios UI/localStorage si quieres
+    }
+
+  } else if (boton.classList.contains('restar')) {
+    const cantidadSpan = document.getElementById(`cantidad-${id}`);
+    let cantidadActual = Number(cantidadSpan.textContent);
+    
+
+    if (cantidadActual <= 1) return; // No permitir cantidad 0 aquí (usa eliminar)
+
+    // Actualizar UI inmediatamente
+    cantidadSpan.textContent = cantidadActual - 1;
+
+    const stockSpan = document.getElementById(`stock-${id}`);
+    let stockActual = Number(stockSpan?.textContent) || 0;
+    stockSpan.textContent = stockActual + 1;
+
+  actualizarEstadoBotonAgregar(id, stockActual + 1);
+    // Actualizar localStorage
+    let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+    const producto = carrito.find(p => p.id === id);
+    if (producto) producto.cantidad -= 1;
+    localStorage.setItem('carrito', JSON.stringify(carrito));
+    actualizarContadorCarrito();
+
+    // Actualizar stock en backend (async, no bloquea UI)
+    try {
+      await actualizarStock(id, stockActual + 1);
+    } catch (error) {
+      console.error('Error actualizando stock:', error);
+      mostrarAlerta('Error al actualizar stock en servidor');
+      // Puedes revertir cambios UI/localStorage si quieres
+    }
+  } else if (boton.classList.contains('eliminar-item')) {
+    // Aquí puedes llamar a eliminarDelCarrito(id) que tienes
+    await eliminarDelCarrito(id);
+  }
+
+  // Opcional: actualizar subtotal y total en UI sin rerender completo para más rapidez
+  // Pero renderizarCarrito() completo también es válido
+  renderizarCarrito();
+});
+
+// Función para actualizar el estado del botón "Agregar al carrito" según stock
+function actualizarEstadoBotonAgregar(id, stock) {
+  const boton = document.querySelector(`.agregar-carrito[data-id="${id}"]`);
+  if (!boton) return;
+
+  if (stock <= 0) {
+    boton.disabled = true;
+    boton.textContent = 'Sin stock';
+    boton.style.backgroundColor = 'gray';
+  } else {
+    boton.disabled = false;
+    boton.textContent = 'Agregar al carrito';
+    boton.style.backgroundColor = '';
+  }
+}
 
 
 async function actualizarCantidad(id, accion) {
   try {
+    // Obtener stock actual desde backend
     const res = await fetch(`https://mayorista-sinlimites-backend-production.up.railway.app/productos/variantes/${id}`);
     const data = await res.json();
-    let stockActual = data.stock;
+    let stockActual = Number(data.stock) || 0;
 
     let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
     const producto = carrito.find(p => p.id === id);
-
     if (!producto) return;
 
     if (accion === 'sumar') {
-      // Permitir sumar solo si hay stock disponible
       if (stockActual > 0) {
         producto.cantidad += 1;
-        stockActual -= 1; // Reducimos stock localmente
-        await actualizarStock(id, stockActual); // Actualizar DB con nuevo stock
-        document.getElementById(`stock-${id}`).textContent = stockActual; // Actualizar UI
+        stockActual -= 1;
+        await actualizarStock(id, stockActual);
+        document.getElementById(`stock-${id}`).textContent = stockActual;
 
-        // Si stock llega a 0, deshabilitar botón y alertar
-        if (stockActual == 0) {
-          
+        if (stockActual === 0) {
           const boton = document.querySelector(`.agregar-carrito[data-id="${id}"]`);
           if (boton) {
             boton.disabled = true;
@@ -384,29 +445,27 @@ async function actualizarCantidad(id, accion) {
           }
         }
       } else {
-        
-     mostrarAlerta('No hay más stock disponible');
+        mostrarAlerta('No hay más stock disponible');
+        return;
       }
     } else if (accion === 'restar' && producto.cantidad > 1) {
       producto.cantidad -= 1;
-      stockActual += 1; // Incrementamos stock localmente
-      await actualizarStock(id, stockActual); // Actualizar DB
-      document.getElementById(`stock-${id}`).textContent = stockActual; // UI
+      stockActual += 1;
+      await actualizarStock(id, stockActual);
+      document.getElementById(`stock-${id}`).textContent = stockActual;
 
-      // Si se suma stock, reactivar botón si estaba deshabilitado
       const boton = document.querySelector(`.agregar-carrito[data-id="${id}"]`);
-if (boton && boton.disabled && stockActual > 0) {
-  boton.disabled = false;
-  boton.textContent = 'Agregar al carrito';
-  boton.style.backgroundColor = '';
-}
-
+      if (boton && boton.disabled && stockActual > 0) {
+        boton.disabled = false;
+        boton.textContent = 'Agregar al carrito';
+        boton.style.backgroundColor = '';
+      }
     }
 
     localStorage.setItem('carrito', JSON.stringify(carrito));
     document.getElementById(`cantidad-${id}`).textContent = producto.cantidad;
-    
-  actualizarContadorCarrito();  
+
+    actualizarContadorCarrito();
     renderizarCarrito();
 
   } catch (error) {
@@ -415,31 +474,39 @@ if (boton && boton.disabled && stockActual > 0) {
 }
 
 
+async function eliminarDelCarrito(id) {
+  id = Number(id); // asegurar que sea número
 
-
-function eliminarDelCarrito(id) {
   let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
   // Buscar el producto a eliminar
   const productoAEliminar = carrito.find(item => item.id === id);
   if (productoAEliminar) {
     const stockElemento = document.getElementById(`stock-${productoAEliminar.id}`);
-    let stockActual = parseInt(stockElemento.textContent);
+    let stockActual = Number(stockElemento?.textContent) || 0;
     const nuevoStock = stockActual + productoAEliminar.cantidad;
 
-    // Actualizar el stock en la base de datos
-    actualizarStock(productoAEliminar.id, nuevoStock);
+    try {
+      await actualizarStock(productoAEliminar.id, nuevoStock);
 
-    stockElemento.textContent = nuevoStock;
+      if (stockElemento) {
+        stockElemento.textContent = nuevoStock;
+      }
 
-    // Habilitar el botón de agregar al carrito nuevamente
-   const boton = document.querySelector(`.agregar-carrito[data-id="${productoAEliminar.id}"]`);
-if (boton) {
-  boton.disabled = false;
-  boton.textContent = 'Agregar al carrito';
-  boton.style.backgroundColor = '';
-}
+      // Habilitar el botón de agregar al carrito nuevamente
+      const boton = document.querySelector(`.agregar-carrito[data-id="${productoAEliminar.id}"]`);
+      if (boton) {
+        boton.disabled = false;
+        boton.textContent = 'Agregar al carrito';
+        boton.style.backgroundColor = '';
+      }
 
+    } catch (error) {
+      console.error('Error al actualizar stock al eliminar del carrito:', error);
+      alert('No se pudo actualizar el stock en el servidor.');
+      // Puedes decidir si continuar o abortar la eliminación
+      return; // Opcional: salir para evitar inconsistencia
+    }
   }
 
   // Eliminar el producto del carrito
@@ -448,7 +515,6 @@ if (boton) {
   actualizarContadorCarrito();
   renderizarCarrito();
 }
-
 
 
 
