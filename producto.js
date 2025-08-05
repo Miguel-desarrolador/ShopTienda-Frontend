@@ -1,55 +1,46 @@
 
- window.verificarCodigo = function() {
-  const codigoIngresado = document.getElementById('codigoEmpleado').value;
-  const codigoCorrecto = '3425'; // Cambia por tu código real
+  window.verificarCodigo = function() {
+    const codigoIngresado = document.getElementById('codigoEmpleado').value;
+    const codigoCorrecto = '3425'; // Cambia por tu código real
 
-  if (codigoIngresado === codigoCorrecto) {
-    // Mostrar inputs y botones solo para empleados
-    document.querySelectorAll('.solo-empleado').forEach(div => {
-      div.style.display = 'block';
-    });
+    if (codigoIngresado === codigoCorrecto) {
+     
 
-    // Mostrar los botones "Agregar producto"
-    document.querySelectorAll('.btn-agregar-producto').forEach(btn => {
-      btn.style.display = 'inline-block';  // o 'block', como prefieras
-    });
+      // Mostrar inputs y botones solo para empleados
+      document.querySelectorAll('.solo-empleado').forEach(div => {
+        div.style.display = 'block';
+      });
 
-    // Ocultar formulario de verificación
-    document.getElementById('verificarEmpleado').style.display = 'none';
+      // Ocultar formulario de verificación
+      document.getElementById('verificarEmpleado').style.display = 'none';
 
-    // Crear botón "Cerrar empleados" si no existe
-    if (!document.getElementById('cerrarEmpleadoBtn')) {
-      const botonCerrar = document.createElement('button');
-      botonCerrar.id = 'cerrarEmpleadoBtn';
-      botonCerrar.textContent = 'CERRAR EMPLEADOS';
-      botonCerrar.onclick = function() {
-        // Ocultar inputs y botones para empleados
-        document.querySelectorAll('.solo-empleado').forEach(div => {
-          div.style.display = 'none';
-        });
+      // Crear botón "Cerrar empleados" si no existe
+      if (!document.getElementById('cerrarEmpleadoBtn')) {
+        const botonCerrar = document.createElement('button');
+        botonCerrar.id = 'cerrarEmpleadoBtn';
+        botonCerrar.textContent = 'CERRAR EMPLEADOS';
+        botonCerrar.onclick = function() {
+          // Ocultar inputs y botones para empleados
+          document.querySelectorAll('.solo-empleado').forEach(div => {
+            div.style.display = 'none';
+          });
 
-        // Ocultar botones "Agregar producto"
-        document.querySelectorAll('.btn-agregar-producto').forEach(btn => {
-          btn.style.display = 'none';
-        });
+          // Mostrar formulario de verificación
+          document.getElementById('verificarEmpleado').style.display = 'block';
 
-        // Mostrar formulario de verificación
-        document.getElementById('verificarEmpleado').style.display = 'block';
+          // Eliminar botón "Cerrar empleados"
+          botonCerrar.remove();
 
-        // Eliminar botón "Cerrar empleados"
-        botonCerrar.remove();
+          // Limpiar input código
+          document.getElementById('codigoEmpleado').value = '';
+        };
 
-        // Limpiar input código
-        document.getElementById('codigoEmpleado').value = '';
-      };
-
-      document.getElementById('botonCerrarEmpleadoContainer').appendChild(botonCerrar);
+        document.getElementById('botonCerrarEmpleadoContainer').appendChild(botonCerrar);
+      }
+    } else {
+      alert('Código incorrecto');
     }
-  } else {
-    alert('Código incorrecto');
-  }
-};
-
+  };
 
 // Abrir el carrito flotante
 const carritoIcono = document.getElementById('carrito-icono');
@@ -106,95 +97,6 @@ function agregarAlCarrito(event) {
     mostrarAlerta('No hay más stock disponible');
   }
 }
-// Variable global para controlar si el usuario es empleado
-let esEmpleado = false;
-
-// Función para mostrar el modal de agregar producto
-function mostrarFormularioAgregarProducto(contenedor, nombreProducto) {
-  // Evitar duplicados
-  if (document.getElementById('modalAgregarProducto')) return;
-
-  // Crear modal fondo
-  const modalFondo = document.createElement('div');
-  modalFondo.id = 'modalAgregarProducto';
-  modalFondo.style.position = 'fixed';
-  modalFondo.style.top = 0;
-  modalFondo.style.left = 0;
-  modalFondo.style.width = '100vw';
-  modalFondo.style.height = '100vh';
-  modalFondo.style.backgroundColor = 'rgba(0,0,0,0.5)';
-  modalFondo.style.display = 'flex';
-  modalFondo.style.justifyContent = 'center';
-  modalFondo.style.alignItems = 'center';
-  modalFondo.style.zIndex = 1000;
-
-  // Contenedor formulario
-  const formContenedor = document.createElement('div');
-  formContenedor.style.backgroundColor = '#fff';
-  formContenedor.style.padding = '20px';
-  formContenedor.style.borderRadius = '8px';
-  formContenedor.style.width = '320px';
-  formContenedor.style.boxShadow = '0 0 10px rgba(0,0,0,0.25)';
-  formContenedor.innerHTML = `
-    <h3>Agregar nueva variante a ${nombreProducto}</h3>
-    <form id="formAgregarProducto" enctype="multipart/form-data">
-      <label>Precio: <input type="number" name="precio" required min="0"></label><br><br>
-      <label>Stock: <input type="number" name="stock" required min="0"></label><br><br>
-      <label>Imagen: <input type="file" name="imagen" accept="image/*" required></label><br><br>
-      <button type="submit" style="background-color:#28a745; color:#fff; border:none; padding:8px 16px; border-radius:4px; cursor:pointer;">Guardar</button>
-      <button type="button" id="btnCancelarAgregar" style="margin-left: 10px; padding:8px 16px; border-radius:4px; cursor:pointer;">Cancelar</button>
-    </form>
-  `;
-
-  modalFondo.appendChild(formContenedor);
-  document.body.appendChild(modalFondo);
-
-  // Cancelar cierra modal
-  formContenedor.querySelector('#btnCancelarAgregar').addEventListener('click', () => {
-    modalFondo.remove();
-  });
-
-  // Manejar submit del formulario
-  formContenedor.querySelector('#formAgregarProducto').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const form = e.target;
-    const precio = Number(form.precio.value);
-    const stock = Number(form.stock.value);
-    const imagenFile = form.imagen.files[0];
-
-    if (!precio || !stock || !imagenFile) {
-      alert('Completa todos los campos.');
-      return;
-    }
-
-    // Crear FormData para enviar archivo al backend
-    const formData = new FormData();
-    formData.append('precio', precio);
-    formData.append('stock', stock);
-    formData.append('imagen', imagenFile);
-    formData.append('nombreProducto', nombreProducto);
-
-    try {
-      // Enviar formulario a tu backend (debes crear la ruta backend que acepte esto)
-      const res = await fetch('https://tu-backend.com/api/agregar-producto', {
-        method: 'POST',
-        body: formData
-      });
-
-      if (!res.ok) throw new Error('Error al agregar producto');
-
-      const data = await res.json();
-      alert('Producto agregado correctamente');
-
-      // Opcional: cerrar modal y refrescar lista productos
-      modalFondo.remove();
-      obtenerProductos(); // recarga productos
-    } catch (error) {
-      console.error(error);
-      alert('Error al agregar producto');
-    }
-  });
-}
 
 // Función para obtener productos y renderizarlos
 async function obtenerProductos() {
@@ -218,23 +120,6 @@ async function obtenerProductos() {
       const toggleButton = document.createElement('button');
       toggleButton.textContent = 'Ver Más';
       toggleButton.classList.add('ver-mas-btn');
-
-      // Botón "Agregar producto" solo visible para empleados
-      const btnAgregarProducto = document.createElement('button');
-      btnAgregarProducto.textContent = '➕ Agregar producto';
-      btnAgregarProducto.classList.add('btn-agregar-producto');
-      btnAgregarProducto.style.display = esEmpleado ? 'block' : 'none';
-      btnAgregarProducto.style.marginTop = '10px';
-      btnAgregarProducto.style.backgroundColor = '#28a745';
-      btnAgregarProducto.style.color = 'white';
-      btnAgregarProducto.style.border = 'none';
-      btnAgregarProducto.style.padding = '8px 16px';
-      btnAgregarProducto.style.borderRadius = '6px';
-      btnAgregarProducto.style.cursor = 'pointer';
-
-      btnAgregarProducto.addEventListener('click', () => {
-        mostrarFormularioAgregarProducto(productoDiv, producto.nombre);
-      });
 
       const variantesContainer = document.createElement('div');
       variantesContainer.classList.add('variantes');
@@ -304,7 +189,6 @@ async function obtenerProductos() {
       });
 
       productoDiv.appendChild(toggleButton);
-      productoDiv.appendChild(btnAgregarProducto);
       productoDiv.appendChild(variantesContainer);
       container.appendChild(productoDiv);
     });
@@ -314,48 +198,13 @@ async function obtenerProductos() {
   }
 }
 
-// Función para verificar código empleado y mostrar opciones
-function verificarCodigoEmpleado() {
-  const codigoIngresado = document.getElementById('codigoEmpleado').value;
-  const codigoCorrecto = '3425'; // Cambiar por código real
-
-  if (codigoIngresado === codigoCorrecto) {
-    esEmpleado = true;
-    // Mostrar botones solo-empleado
-    document.querySelectorAll('.solo-empleado').forEach(div => {
-      div.style.display = 'block';
-    });
-    // Mostrar botones agregar producto
-    document.querySelectorAll('.btn-agregar-producto').forEach(btn => {
-      btn.style.display = 'block';
-    });
-
-    // Ocultar formulario verificación y mostrar botón cerrar
-    document.getElementById('verificarEmpleado').style.display = 'none';
-    if (!document.getElementById('cerrarEmpleadoBtn')) {
-      const btnCerrar = document.createElement('button');
-      btnCerrar.id = 'cerrarEmpleadoBtn';
-      btnCerrar.textContent = 'CERRAR EMPLEADOS';
-      btnCerrar.onclick = () => {
-        esEmpleado = false;
-        document.querySelectorAll('.solo-empleado').forEach(div => {
-          div.style.display = 'none';
-        });
-        document.querySelectorAll('.btn-agregar-producto').forEach(btn => {
-          btn.style.display = 'none';
-        });
-        document.getElementById('verificarEmpleado').style.display = 'block';
-        btnCerrar.remove();
-        document.getElementById('codigoEmpleado').value = '';
-      };
-      document.getElementById('botonCerrarEmpleadoContainer').appendChild(btnCerrar);
-    }
-  } else {
-    alert('Código incorrecto');
+// Delegación de evento para agregar productos al carrito
+document.getElementById('productos').addEventListener('click', (event) => {
+  if (event.target.classList.contains('agregar-carrito')) {
+    agregarAlCarrito(event);
   }
-}
+});
 
-// Delegación
 
 
 let idAEliminar = null; // o let idEliminar = null;
