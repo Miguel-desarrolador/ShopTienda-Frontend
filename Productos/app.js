@@ -26,7 +26,7 @@ menuToggle.classList.remove("open"); // Cambia el ícono del menú
   });
 
     // Api
-const API_URL = "https://mayorista-sinlimites-backend-production.up.railway.app";
+const API_URL = "https://mayorista-sinlimites-backend-production.up.railway.app/api/productos";
 
 
 // DOM Elements
