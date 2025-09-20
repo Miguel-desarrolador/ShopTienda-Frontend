@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis Facturas</title>
+  <style>
+    /* =========================
+       RESET Y TIPOGRAFÍA
+    ========================= */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background-color: #f0f2f5;
+      color: #333;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 30px 25px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      color: #1a1a1a;
+      margin-bottom: 25px;
+    }
+
+    #buscador {
+      width: 100%;
+      padding: 12px 15px;
+      margin-bottom: 25px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    #buscador:focus {
+      outline: none;
+      border-color: #4b90ff;
+      box-shadow: 0 0 6px rgba(75,144,255,0.4);
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f9f9f9;
+      padding: 15px 20px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      transition: transform 0.2s, box-shadow 0.2s;
+      flex-wrap: wrap;
+    }
+
+    li:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    }
+
+    .info {
+      flex: 1;
+      word-break: break-word;
+    }
+
+    .info strong {
+      font-size: 1.1rem;
+      color: #1a1a1a;
+    }
+
+    .info small {
+      display: block;
+      color: #777;
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
+
+    .botones {
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+      margin-left: auto; /* Esto empuja los botones al lado derecho */
+    }
+
+    button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      color: #fff;
+    }
+.ver .descargar-texto {
+  color: #fcd526; /* Verde */
+  font-weight: bold;
+}
+
+
+    button.ver {
+      background: #4b90ff;
+    }
+    button.ver:hover {
+      background: #1e6fff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(30,111,255,0.4);
+    }
+
+    button.eliminar {
+      background: #ff4b4b;
+    }
+    button.eliminar:hover {
+      background: #e03e3e;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(224,62,62,0.4);
+    }
+
+    .mensaje {
+      text-align: center;
+      color: #555;
+      font-size: 16px;
+      margin-top: 20px;
+    }
+
+    /* Responsivo */
+    @media (max-width: 600px) {
+      li {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .botones {
+        margin-left: 0;
+        margin-top: 10px;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Mis Facturas</h1>
+    <input type="text" id="buscador" placeholder="Buscar factura por nombre..." />
+    <ul id="listaFacturas"></ul>
+    <p class="mensaje" id="mensajeVacio">Cargando facturas...</p>
+  </div>
+
+<script>
+const listaFacturas = document.getElementById("listaFacturas");
+const buscador = document.getElementById("buscador");
+const mensajeVacio = document.getElementById("mensajeVacio");
+
+// Si tu backend corre en tu máquina, por ejemplo en el puerto 5000
+const BACKEND_URL = "http://localhost:5000";
+const API_URL = `${BACKEND_URL}/api/productos`;
+
+
+// Cargar todas las facturas
+async function cargarFacturas() {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/facturas`);
+    if (!res.ok) throw new Error("Error al cargar facturas");
+    const facturas = await res.json();
+    mostrarFacturas(facturas);
+  } catch (err) {
+    console.error(err);
+    mensajeVacio.textContent = "Error al cargar facturas";
+  }
+}
+
+// Mostrar facturas en la lista
+function mostrarFacturas(facturas) {
+  listaFacturas.innerHTML = "";
+  if (!facturas.length) {
+    mensajeVacio.textContent = "No hay facturas disponibles";
+    return;
+  }
+  mensajeVacio.textContent = "";
+
+  facturas.forEach(f => {
+    const li = document.createElement("li");
+
+    // Info factura
+    const info = document.createElement("div");
+    info.classList.add("info");
+    info.innerHTML = `
+      <strong>${f.nombre}</strong>
+      <small>📅 ${new Date(f.fecha).toLocaleString()} | 📄 ${f.tamañoKB} KB</small>
+    `;
+
+    // Contenedor de botones
+    const botones = document.createElement("div");
+    botones.classList.add("botones");
+
+   // Botón Ver o Descargar
+const verBtn = document.createElement("button");
+verBtn.innerHTML = `Ver ó <span class="descargar-texto">Descargar</span> PDF`;
+verBtn.classList.add("ver");
+verBtn.onclick = () => window.open(f.url, "_blank");
+
+
+    // Botón Eliminar
+    const eliminarBtn = document.createElement("button");
+    eliminarBtn.textContent = "Eliminar";
+    eliminarBtn.classList.add("eliminar");
+    eliminarBtn.onclick = async () => {
+      if(confirm(`¿Eliminar ${f.nombre}?`)) {
+        const res = await fetch(`${BACKEND_URL}/api/facturas/${encodeURIComponent(f.nombre)}`, { method: "DELETE" });
+        if (!res.ok) return alert("Error al eliminar factura");
+        cargarFacturas();
+      }
+    };
+
+    botones.appendChild(verBtn);
+    botones.appendChild(eliminarBtn);
+
+    li.appendChild(info);
+    li.appendChild(botones);
+    listaFacturas.appendChild(li);
+  });
+}
+
+// Buscador en tiempo real
+buscador.addEventListener("input", () => {
+  const filtro = buscador.value.toLowerCase();
+  const items = listaFacturas.querySelectorAll("li");
+  let visibles = 0;
+
+  items.forEach(li => {
+    const texto = li.querySelector(".info").textContent.toLowerCase();
+    if (texto.includes(filtro)) {
+      li.style.display = "flex";
+      visibles++;
+    } else {
+      li.style.display = "none";
+    }
+  });
+
+  mensajeVacio.textContent = visibles === 0 ? "No se encontraron facturas." : "";
+});
+
+// Inicializar
+cargarFacturas();
+</script>
+</body>
+</html>
