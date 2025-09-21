@@ -134,7 +134,7 @@ nav ul li a:hover {
   justify-content: center;
   align-items: center;
   height: 100%;
-  margin-top: 200px;
+  margin-top: 150px;
   z-index: 1; /* el contenido va adelante */
 }
 
