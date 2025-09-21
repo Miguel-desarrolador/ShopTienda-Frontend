@@ -119,7 +119,7 @@ body {
 #logo::before {
   content: "Tu Compra";       /* Texto visible */
   display: inline-block;
-  margin-left: 80px;
+  margin-left:50px;
 }
 
 .producto {
