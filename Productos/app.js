@@ -17,6 +17,38 @@ menuToggle.classList.remove("open"); // Cambia el ícono del menú
 });
 
 
+const container = document.querySelector('.logos-container');
+const slides = document.querySelectorAll('.slide');
+const prev = document.querySelector('.prev');
+const next = document.querySelector('.next');
+
+let currentIndex = 0;
+
+// Función para mover el carrusel
+function showSlide(index) {
+  const slideWidth = slides[0].offsetWidth;
+  container.style.transform = `translateX(-${index * slideWidth}px)`;
+}
+
+// Flechas
+next.addEventListener('click', () => {
+  currentIndex = (currentIndex + 1) % slides.length;
+  showSlide(currentIndex);
+});
+
+prev.addEventListener('click', () => {
+  currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+  showSlide(currentIndex);
+});
+
+// Auto-slide cada 5 segundos
+setInterval(() => {
+  currentIndex = (currentIndex + 1) % slides.length;
+  showSlide(currentIndex);
+}, 5000);
+
+// Ajusta si se cambia el tamaño de la ventana
+window.addEventListener('resize', () => showSlide(currentIndex));
 
 
 // BOTON SCROLL - SUBE ARRIBA DE TODO
@@ -749,10 +781,10 @@ finalizarCompraBtn.addEventListener("click", async () => {
     return; 
   }
 
-  // ✅ Validar mínimo de 15 unidades
+  // ✅ Validar mínimo de 5 unidades (antes era 15)
   const totalUnidades = carrito.reduce((sum, item) => sum + item.cantidad, 0);
-  if (totalUnidades < 15) {
-    mostrarAlerta("Debes comprar al menos 15 unidades para finalizar la compra", "error");
+  if (totalUnidades < 5) {
+    mostrarAlerta("Debes comprar al menos 5 unidades para finalizar la compra", "error");
     return;
   }
 
@@ -904,7 +936,7 @@ const btnValidarCodigo = document.getElementById("btnValidarCodigo");
 const inputCodigoAcceso = document.getElementById("inputCodigoAcceso");
 const btnAgregarProducto = document.getElementById("btnAbrirModal");
 
-const CODIGO_EMPLEADO = "3425";
+const CODIGO_EMPLEADO = "5030";
 
 // Recuperar estado del localStorage
 let accesoEmpleado = localStorage.getItem("accesoEmpleado") === "true";
