@@ -260,7 +260,7 @@ hr {
 .carousel {
     background-color: white;
     margin-bottom: -210px;
-  
+  padding: 40px;
   overflow: hidden;
   position: relative;
 }

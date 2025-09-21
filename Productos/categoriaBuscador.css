@@ -89,14 +89,37 @@ body {
 }
 /* En pantallas chicas (celulares) -> 1 columna */
 @media (max-width: 600px) {
+  .grid {
+    grid-template-columns: 1fr; /* solo 1 columna */
+    gap: 1rem;
+    padding: 1rem;
+  }
   
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); /* siempre 2 columnas */
-  gap: 1rem;
-  padding: 1rem;
 }
 
+/* Contenedor del logo y texto */
+#logo {
+  display: flex;               /* Para alinear horizontalmente logo y texto */
+  align-items: center;         /* Centrar verticalmente */
+  gap: 10px;                   /* Espacio entre logo y texto */
+  font-family: 'Arial', sans-serif; /* Fuente moderna */
+  font-size: 24px;             /* Tamaño del texto */
+  font-weight: bold;           /* Negrita */
+  color: #0e0e0e;              /* Color llamativo */
+}
+
+/* Imagen del logo */
+#logo img.logo-gorra {
+  width: 70px;                 /* Tamaño del logo */
+  height: 70px;
+  object-fit: contain;
+}
+
+/* Texto "Tu Carrito" */
+#logo::before {
+  content: "Tu Compra";       /* Texto visible */
+  display: inline-block;
+  margin-left: 80px;
 }
 
 .producto {
@@ -114,7 +137,7 @@ body {
 }
 
 .producto img {
-  width: 100%;
+  width: 70%;
   height: auto;
   object-fit: cover;
   border-radius: 8px;
