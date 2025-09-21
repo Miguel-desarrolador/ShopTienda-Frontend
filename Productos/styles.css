@@ -255,8 +255,13 @@ display: inline-block;
     
 }
 
-.social-icon:hover.facebook {
-    color: #3b5998;
+
+/* Colores personalizados para cada icono */
+.social-icon.facebook {
+    color: #2072ff;
+font-size: 50px;
+display: inline-block;
+
 }
 
 .social-icon:hover.twitter {
