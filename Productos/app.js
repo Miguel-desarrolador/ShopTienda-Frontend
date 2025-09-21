@@ -124,7 +124,8 @@ function renderizarProductos(listaProductos) {
     <div class="producto" data-id="${p.id}" data-aos="fade-right">
      <img src="https://mayorista-sinlimites-backend-production.up.railway.app/img/productos/${p.imagen}" alt="${p.nombre}">
       <h3>${p.nombre}</h3>
-      <p class="precio">Precio: $${p.precio}</p>
+      <p class="precio">Precio: $${p.precio.toLocaleString("es-AR")}</p>
+
       <p class="stock">Stock: ${p.stock}</p>
       <div class="cantidad-control">
         <button class="btn-menos">-</button>
@@ -648,9 +649,11 @@ function renderizarCarrito() {
 
       <div class="carrito-info">
         <p><strong>${p.nombre}</strong></p>
-        <p>Precio: $${p.precio}</p>
+        <p class="precio">Precio: $${p.precio.toLocaleString("es-AR")}</p>
+
         <p>Stock: ${p.stock}</p>
-        <p class="subtotal">Subtotal: $${subtotal}</p>
+        <p class="subtotal">Subtotal: $${subtotal.toLocaleString("es-AR")}</p>
+
         <div class="carrito-cantidad">
           <button class="btn-menos">-</button>
           <span>${p.cantidad}</span>
@@ -667,7 +670,8 @@ function renderizarCarrito() {
     carritoProductos.appendChild(div);
   });
 
-  totalCarritoSpan.textContent = total;
+  // 🔹 Mostrar el total y la cantidad con formato
+  totalCarritoSpan.textContent = total.toLocaleString("es-AR");
   cantidadCarritoSpan.textContent = cantidadTotal;
 }
 
