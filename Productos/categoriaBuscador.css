@@ -118,8 +118,8 @@ body {
 /* Texto "Tu Carrito" */
 #logo::before {
   content: "Tu Compra";       /* Texto visible */
-  display: inline-block;
-  margin-left:50px;
+  display: inline-flex;
+  margin-left: 80px;
 }
 
 .producto {
