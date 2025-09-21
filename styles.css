@@ -10,7 +10,6 @@ html {
 body {
   
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-image: url('logo2.jpg'); /* Imagen de fondo */
     background-size: 100%;
   background-repeat: no-repeat;
     background-position:top;
@@ -112,34 +111,45 @@ nav ul li a:hover {
     border-radius: 5px;
     transition: transform 0.3s ease, opacity 0.3s ease;
 }
-
 .inicio {
-    margin-top: -100px;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 0 20px;
-    position: relative;
-    animation: fadeIn 2s ease-in-out; /* Animación de fade-in */
+  position: relative;
+  width: 100%;
+  height: 100vh; /* pantalla completa */
+  overflow: hidden;
 }
 
-.inicio h1 {
-    font-size: 3.5rem;
-    margin-bottom: 15px;
-    letter-spacing: 2px;
-    font-weight: bold;
-    color: orangered;
-    animation: textFadeIn 2s ease-in-out; /* Animación de fade-in del texto */
+.video-fondo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* hace que el video se ajuste */
+  z-index: -1; /* lo manda atrás */
 }
 
-.inicio p {
-    font-size: 1.25rem;
-    margin-bottom: 30px;
-    color: black; 
-    
-    animation: textFadeIn 2s ease-in-out 0.3s; /* Animación de fade-in con retraso */
+.inicio-content {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  margin-top: 200px;
+  z-index: 1; /* el contenido va adelante */
+}
+
+.btn-cta {
+  padding: 12px 24px;
+  background: #ff6600;
+  color: #fff;
+  text-decoration: none;
+  font-size: 18px;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+.btn-cta:hover {
+  background: #e05500;
 }
 
 .parrafo-titulo{
