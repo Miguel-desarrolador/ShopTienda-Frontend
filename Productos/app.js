@@ -851,24 +851,20 @@ btnAutocompletar.addEventListener("click", () => {
 // ==========================
 function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-// ==========================
+}// ==========================
 // FINALIZAR COMPRA Y GENERAR PDF
 // ==========================
 formDatosCliente.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const datosCliente = {
-    nombre: document.getElementById("inputNombreCliente").value,
-    dni: document.getElementById("inputDNI").value,
-    celular: document.getElementById("inputCelular").value,
-    provincia: document.getElementById("inputProvincia").value,
-    localidad: document.getElementById("inputLocalidad").value,
-    codigoPostal: document.getElementById("inputCodigoPostal").value,
-    email: document.getElementById("inputEmailCliente").value,
-    envio: document.getElementById("selectEnvio").value,
-    dispositivo: document.getElementById("selectDispositivo").value
+    nombre: document.getElementById("inputNombreCliente").value.trim(),
+    apellido: document.getElementById("inputApellidoCliente").value.trim(),
+    telefono: document.getElementById("inputTelefono").value.trim(),
+    direccion: document.getElementById("inputDireccion").value.trim(),
+    email: document.getElementById("inputEmailCliente").value.trim(),
+    dispositivo: document.getElementById("selectDispositivo").value,
+    formaPago: document.getElementById("selectPago").value
   };
 
   try {
@@ -889,9 +885,9 @@ formDatosCliente.addEventListener("submit", async (e) => {
     localStorage.setItem("datosCliente", JSON.stringify(datosCliente));
 
     // --------------------------
-    // CREAR PDF CORRECTO
+    // CREAR PDF
     // --------------------------
-    await generarPDF(datosCliente, carrito); // <--- Aquí estaba el error, ahora pasamos carrito
+    await generarPDF(datosCliente, carrito);
 
     // Limpiar carrito y modal
     carrito = [];
@@ -902,7 +898,7 @@ formDatosCliente.addEventListener("submit", async (e) => {
     mostrarAlerta("Compra realizada con éxito!", "success");
   } catch (err) {
     console.error(err);
-   mostrarAlerta("Error finalizando la compra, intente más tarde.", "error");
+    mostrarAlerta("Error finalizando la compra, intente más tarde.", "error");
   }
 });
 
@@ -910,13 +906,12 @@ formDatosCliente.addEventListener("submit", async (e) => {
 // GENERAR PDF EN BACKEND
 // ==========================
 async function generarPDF(datosCliente, carrito) {
- try {
-  const res = await fetch("https://mayorista-sinlimites-backend-production.up.railway.app/api/compras/pdf", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ datosCliente, carrito }) // carrito ya definido
-  });
-
+  try {
+    const res = await fetch("https://mayorista-sinlimites-backend-production.up.railway.app/api/compras/pdf", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ datosCliente, carrito })
+    });
 
     const data = await res.json();
     console.log("PDF guardado en backend:", data.filePath);
