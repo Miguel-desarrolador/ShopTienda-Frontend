@@ -632,7 +632,7 @@ display: inline-block;
 /* Sección de Días y Horarios */
 .footer-hours h3 {
     font-size: 28px;
-    color: #fff;
+    color: #ffffff;
     margin-bottom: 20px;
     font-weight: 700;
     letter-spacing: 1px;
@@ -641,7 +641,7 @@ display: inline-block;
 .footer-hours p {
     font-size: 16px;
     margin: 5px 0;
-    color: #bdc3c7;
+    color: #ffffff;
 }
 
 
@@ -651,7 +651,7 @@ display: inline-block;
     margin-top: 30px;
     margin-bottom: 40px;
     font-size: 14px;
-    color: #bdc3c7;
+    color: #ffffff;
 }
 
 .footer-info p {
