@@ -776,6 +776,7 @@ function cargarCategorias() {
 // ==========================
 const btnAutocompletar = document.getElementById("btnAutocompletar");
 
+
 // ==========================
 // ABRIR MODAL
 // ==========================
@@ -783,13 +784,6 @@ finalizarCompraBtn.addEventListener("click", async () => {
   if (carrito.length === 0) { 
     mostrarAlerta("¡El carrito está vacío!", "error"); 
     return; 
-  }
-
-  // ✅ Validar mínimo de 5 unidades (antes era 15)
-  const totalUnidades = carrito.reduce((sum, item) => sum + item.cantidad, 0);
-  if (totalUnidades < 5) {
-    mostrarAlerta("Debes comprar al menos 5 unidades para finalizar la compra", "error");
-    return;
   }
 
   try {
@@ -802,7 +796,10 @@ finalizarCompraBtn.addEventListener("click", async () => {
     });
 
     if (sinStock.length > 0) {
-      mostrarAlerta(`Productos sin stock suficiente: ${sinStock.map(p => p.nombre).join(", ")}`, "error");
+      mostrarAlerta(
+        `Productos sin stock suficiente: ${sinStock.map(p => p.nombre).join(", ")}`, 
+        "error"
+      );
 
       carrito = carrito.filter(item => !sinStock.includes(item));
       guardarCarrito();
@@ -815,6 +812,7 @@ finalizarCompraBtn.addEventListener("click", async () => {
     mostrarAlerta("Error al verificar stock", "error");
   }
 });
+
 
 // ==========================
 // CERRAR MODAL
